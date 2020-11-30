@@ -1,0 +1,5 @@
+env/
+__PyCache__/
+.vscode/
+client_secrets.json
+test_upload.txt
