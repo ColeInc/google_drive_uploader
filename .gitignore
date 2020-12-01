@@ -2,4 +2,6 @@ env/
 __PyCache__/
 .vscode/
 client_secrets.json
+credentials.json
 test_upload.txt
+settings.yaml
