@@ -4,17 +4,23 @@ import time
 from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from google_drive_uploader import google_drive_uploader
 
 old = 0
 
 class Watcher:
-
-    # Make sure this is a full path, not relative.
-    DIRECTORY_TO_MONITOR = "D:/Cole/PROJECTS/Google Drive Uploader/TEST_DIRECTORY"
-    # DIRECTORY_TO_MONITOR = sys.argv[1]
-
+    
     def __init__(self):
         self.observer = Observer()
+        if len(sys.argv) > 1:
+            self.DIRECTORY_TO_MONITOR = sys.argv[1]
+        else:
+            # Make sure this is a full path, not relative.
+            self.DIRECTORY_TO_MONITOR = "D:/Cole/PROJECTS/Google Drive Uploader/TEST_DIRECTORY"
+            
+        print("-----------------------------------------------------------")
+        print("Starting google_drive_uploader at directory:\n{}".format(self.DIRECTORY_TO_MONITOR))
+        print("-----------------------------------------------------------")
 
     def run(self):
         event_handler = Handler()
@@ -42,15 +48,14 @@ class Handler(FileSystemEventHandler):
             return None
 
         elif event.event_type == 'created':
-            # Take any action here when a file is first created.
+            google_drive_uploader(event.src_path)
             print("{} - Create event: {}".format(date_time, event.src_path))
 
         elif event.event_type == 'modified':
-            # statbuf = os.stat(filename)
             statbuf = os.stat(event.src_path)
             new = statbuf.st_mtime
             if (new - old) > 0.5:
-                # Taken any action here when a file is modified.
+                google_drive_uploader(event.src_path)
                 print("{} - Modify event: {}".format(date_time, event.src_path))
             old = new
 

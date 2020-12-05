@@ -1,7 +1,9 @@
-env/
+app/env/
 __PyCache__/
+app/__PyCache__/
 .vscode/
-client_secrets.json
-credentials.json
-test_upload.txt
-settings.yaml
+app/client_secrets.json
+app/credentials.json
+app/test_upload.txt
+app/settings.yaml
+app/drive_mappings.json
