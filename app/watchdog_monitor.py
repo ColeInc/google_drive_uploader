@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from google_drive_uploader import google_drive_uploader
+from google_drive_uploader import *
 
 old = 0
 
@@ -12,23 +12,28 @@ class Watcher:
     
     def __init__(self):
         self.observer = Observer()
-        if len(sys.argv) > 1:
-            self.DIRECTORY_TO_MONITOR = sys.argv[1]
-        else:
-            # Make sure this is a full path, not relative.
-            self.DIRECTORY_TO_MONITOR = "D:/Cole/PROJECTS/Google Drive Uploader/TEST_DIRECTORY"
-            
-        print("-----------------------------------------------------------")
-        print("Starting google_drive_uploader at directory:\n{}".format(self.DIRECTORY_TO_MONITOR))
-        print("-----------------------------------------------------------")
+
+        print("---------------------------------------------")
+        print("Starting google_drive_uploader!")
+        print("---------------------------------------------")
 
     def run(self):
+
         event_handler = Handler()
-        self.observer.schedule(event_handler, self.DIRECTORY_TO_MONITOR, recursive=True)    # set recursive to false if you don't want to monitor subdirectories as well.
+        resp = get_list_of_local_directories()
+        if resp[0] == False:
+            print(resp[1])
+            return
+        else:
+            directories_to_poll = resp[1]
+
+        for directory in directories_to_poll:
+            print("Creating observer for - {}".format(directory))
+            self.observer.schedule(event_handler, directory, recursive=True)    # set recursive to false if you don't want to monitor subdirectories as well.
         self.observer.start()
         try:
             while True:
-                time.sleep(20)    # maybe change this to like 60 or 300 for production
+                time.sleep(2)    # maybe change this to like 60 or 300 for production
         except Exception as e:
             self.observer.stop()
             print("Closing watchdog monitor.")

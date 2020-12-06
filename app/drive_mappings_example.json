@@ -1,0 +1,19 @@
+{
+    "drive_mappings": [
+        {
+            "local_path": "C:/my_local_pc/directory/i/want/to/poll",    // local computer directory you want to poll
+            "remote_id": "1vk4n3GZpVRiXvTnj3qSg90kSaCcp-s0D",           // unique id of google drive directory you want this local directory to be uploaded to (revise readme.md for how to find this)
+            "remote_path": "/drive/directory/cats"                      // simply here just so you can write the google drive path associated with this remote_id above if you want.
+        },
+        {
+            "local_path": "C:/my_local_pc/directory/two",
+            "remote_id": "1-DGcVW_VfvCH-aRjgl01N3ov54Va3fLS",
+            "remote_path": "/drive/this_directory"
+        },
+        {
+            "local_path": "C:/my_local_pc/directory/three",
+            "remote_id": "18dvQVKdR4QpgZ9iTmbnkGbEo8iNfgvsN",
+            "remote_path": "/drive/directory_three"
+        }
+    ]
+}
