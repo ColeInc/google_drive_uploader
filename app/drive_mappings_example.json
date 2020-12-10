@@ -1,14 +1,16 @@
 {
     "drive_mappings": [
         {
-            "local_path": "C:/my_local_pc/directory/i/want/to/poll",    // local computer directory you want to poll
+            "local_path": "C:/my_local_pc/directory/i/want/to/poll",    // local computer directory you want to poll (not individual file!)
             "remote_id": "1vk4n3GZpVRiXvTnj3qSg90kSaCcp-s0D",           // unique id of google drive directory you want this local directory to be uploaded to (revise readme.md for how to find this)
-            "remote_path": "/drive/directory/cats"                      // simply here just so you can write the google drive path associated with this remote_id above if you want.
+            "remote_path": "/drive/directory/cats",                     // simply here just so you can write the google drive path associated with this remote_id above if you want.
+            "new": "True"                                               // set this field to new if its the first time you're syncing this directory to google drive, and want a full directory sync done.
         },
         {
             "local_path": "C:/my_local_pc/directory/two",
             "remote_id": "1-DGcVW_VfvCH-aRjgl01N3ov54Va3fLS",
-            "remote_path": "/drive/this_directory"
+            "remote_path": "/drive/this_directory",
+            "new": "True"
         },
         {
             "local_path": "C:/my_local_pc/directory/three",

@@ -5,13 +5,35 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
 def get_list_of_local_directories():
+
+    drive_mappings_path = 'D:/Cole/PROJECTS/Google Drive Uploader/google_drive_uploader/app/drive_mappings.json'
     list_of_directories = []
 
-    if os.path.isfile('drive_mappings.json'):
-        with open('drive_mappings.json') as file:
+    if os.path.isfile(drive_mappings_path):
+        with open(drive_mappings_path) as file:
             data = json.load(file)
-            for i in data['drive_mappings']:
-                list_of_directories.append(i["local_path"])
+            index = 0
+            for value in data['drive_mappings']:
+                list_of_directories.append(value["local_path"])
+                if "new" in value and value["new"].lower() == "true":    # Check if this is the first time we are uploading this local directory (field "new": "True" in drive_mappings.json)
+
+                    # get list of all files in directory and upload:
+                    for file in os.listdir(value["local_path"]):
+                        if os.path.isfile(os.path.join(value["local_path"], file)):
+                            print("value going to google_drive_uploader: \n", value["local_path"] + "/" + file)
+                            google_drive_uploader(value["local_path"] + "/" + file)
+
+                    # now deleting the new field from this value:
+                    new_value_dict = {
+                        "local_path": value["local_path"],
+                        "remote_id": value["remote_id"],
+                        "remote_path": value["remote_path"]
+                    }
+                    data['drive_mappings'][index] = new_value_dict               
+                index += 1
+            with open(drive_mappings_path, 'w') as file:
+                json.dump(data, file, indent=4)
+
             return True, list_of_directories
     else:
         print("drive_mappings.json not found!")
@@ -20,10 +42,11 @@ def get_list_of_local_directories():
 
 def get_drive_directory_id(local_path):
 
+    drive_mappings_path = 'D:/Cole/PROJECTS/Google Drive Uploader/google_drive_uploader/app/drive_mappings.json'
     local_directory = os.path.dirname(local_path)
 
-    if os.path.isfile('drive_mappings.json'):
-            with open('drive_mappings.json') as file:
+    if os.path.isfile(drive_mappings_path):
+            with open(drive_mappings_path) as file:
                 data = json.load(file)
                 exists = False
                 for i in data['drive_mappings']:
@@ -43,26 +66,25 @@ def get_drive_directory_id(local_path):
 def google_drive_uploader(local_path):
 
     try:
+        GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "D:/Cole/PROJECTS/Google Drive Uploader/google_drive_uploader/app/client_secrets.json"    # full path of your client_secrets.json file
         g_login = GoogleAuth()
         g_login.LocalWebserverAuth()    # will fire up your browser and navigate to a google login page, choose the account you want to access in your program, authorize the app, and you will be sent to a page saying that
         drive = GoogleDrive(g_login)    # creates a Google Drive object to handle creating files and uploading them to drive, we need to pass the g_login object to the constructor to check if authentication was successful.
-        
-        # get google drive directory id from drive_mappings.json
+
+        # Get Google Drive directory id from drive_mappings.json:
         resp = get_drive_directory_id(local_path)
         if not(resp[0]):
-            print(resp[1])
             return
         else:
             parent_directory_id = resp[1]
         
         with open(local_path, "r") as file:
-            # search the parent directory for an existing file with that name:
+            # Search the parent directory for an existing file with that name:
             file_list = drive.ListFile({'q': "'" + parent_directory_id + "' in parents and title = '" + 
                                             os.path.basename(local_path) + "' and trashed=false"}).GetList()
             
-            if len(file_list) > 0:    #upload the existing file we found here
+            if len(file_list) > 0:    # Upload the existing file we found in Google Drive here
 
-                print(file_list[0]['modifiedDate'], file_list[0]['title'], file_list[0]['id'])
                 existing_file_id = file_list[0]['id']
                 
                 file_drive = drive.CreateFile({'parents': [{'id': parent_directory_id}],
@@ -72,7 +94,7 @@ def google_drive_uploader(local_path):
                 file_drive.Upload()
                 print("Modified file {} in Drive!".format(os.path.basename(local_path)))
 
-            else:    # upload the file as new
+            else:    # Upload the file as new
 
                 file_drive = drive.CreateFile({'parents': [{'id': parent_directory_id}], 
                                                'title': os.path.basename(local_path)})
@@ -81,4 +103,4 @@ def google_drive_uploader(local_path):
                 print("Created file {} in Drive!".format(os.path.basename(local_path)))
 
     except Exception as e:
-        print("Error:\n", e)
+        print("Error:\n", e, sep="")

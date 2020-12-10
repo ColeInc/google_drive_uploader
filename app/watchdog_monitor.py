@@ -28,7 +28,7 @@ class Watcher:
             directories_to_poll = resp[1]
 
         for directory in directories_to_poll:
-            print("Creating observer for - {}".format(directory))
+            print("Creating observer at - {}".format(directory))
             self.observer.schedule(event_handler, directory, recursive=True)    # set recursive to false if you don't want to monitor subdirectories as well.
         self.observer.start()
         try:
