@@ -46,18 +46,23 @@ def get_drive_directory_id(local_path):
     local_directory = os.path.dirname(local_path)
 
     if os.path.isfile(drive_mappings_path):
-            with open(drive_mappings_path) as file:
-                data = json.load(file)
-                exists = False
-                for i in data['drive_mappings']:
-                    if i['local_path'] == local_directory:
-                        remote_id = i['remote_id']
-                        exists = True
-                if exists:
-                    return True, remote_id
-                else:
-                    print("No matching entry for this local path was found inside drive_mappings.json.")
-                    return False, "No matching entry for this local path was found inside drive_mappings.json."
+        with open(drive_mappings_path) as file:
+            data = json.load(file)
+            exists = False
+            for i in data['drive_mappings']:
+                # if i['local_path'] == local_directory:
+                if local_directory in i['local_path']: # if the local file that was modified has a path that is inside drive_mappings.json (or part of its path, E.g. an ansestor directory matches),then fetch the remote_id for this dir
+                    
+                    # create some kind of double if statement here (uncomment the commented condition above as 1, have this as other) that returns a second parameter which lets method below know whether the path of file matched exactly, or if this is like a sub sub directory of the parent file. depending on that parameter in function below make an if statement that branches: 1) treat it like normal full path == full path 2) file path == a sub sub directory of the remote id directory found, then we need to do more calculations, recursive algorithm to upload all subdirectories, etc.
+                    
+                    remote_id = i['remote_id']
+                    exists = True
+                    break
+            if exists:
+                return True, remote_id
+            else:
+                print("No matching entry for this local path was found inside drive_mappings.json.")
+                return False, "No matching entry for this local path was found inside drive_mappings.json."
     else:
         print("drive_mappings.json not found!")
         return False, "drive_mappings.json not found!"
