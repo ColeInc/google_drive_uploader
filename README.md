@@ -6,8 +6,8 @@ Uses a python library called Watchdog to poll for directory changes (designed fo
 
 ## Resources:
 
-pip install pydrive
-pip install watchdog
+* pip install pydrive
+* pip install watchdog
 
 ## Prerequisites:
 
